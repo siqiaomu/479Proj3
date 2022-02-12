@@ -7,7 +7,8 @@ eps = 0.02;
 %x_series_right = x_series(:, 2:M); %stores data for x_m
 
 x_series = tent_map(M, N, eps);
-[trans_probs, transition_tuple] = trans_probability(x_series, N, M);
+[trans_probs, conditional_probs_2, conditional_probs_1, transition_tuple] = trans_probability(x_series, N, M);
+
 
 
 
