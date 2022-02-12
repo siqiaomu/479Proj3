@@ -1,41 +1,92 @@
-function [prob3] = ulam_prob3(data,r)
-    % I suggest running this as follows in your command line, except I 
-    % would take M to be pretty small (like 2 or 3 or something)
-    % if you just want to get a feel for what the full run time will be.
-    % The goal output is to have an estimate of the joint pdf
-    % for each 3 tuple of interest (an M x N-1 array).
+% inputs are: data - generated using gen_ulam.m
+%             r - a vector containing the desired resolution in each
+%             "dimension" (one for i_{n+1}, one for i_n, one for j_n)
+%             ex: [0.2 0.2 0.2]
+%             d - a vector specifying how dense you want the discretization
+%             in each "dimension" to be 
+%             ex: [2 2 2] means we will be sampling twice as many points as
+%             the minimum required to cover everything with resolution r
 
-    % In command line (maybe adjust M):
-    % M = 100; N = 10^5; r= [0.2 0.2 0.2];
-    % data = gen_ulam(M,N,0.3);
-    % [prob3] = ulam_prob3(data,r); 
+function [prob3] = ulam_prob3(data,r,d)
 
+    % get M and N from the data input
     sz = size(data);
     M = sz(1); N = sz(2);
 
-    % 2d data into set of all necessary 3 tuples
-    tuples3 = zeros(M,N-1,3);
+    % at how many points in each "dimension" we will sample
+    npts1 = d(1) * 4/r(1);
+    npts2 = d(2) * 4/r(2);
+    npts3 = d(3) * 4/r(3);
 
+    % these are the points (we take them to be uniform/equally spaced)
+    pts1 = linspace(-2,2,npts1);
+    pts2 = linspace(-2,2,npts2);
+    pts3 = linspace(-2,2,npts3);
+
+    % just transposing to help out later
+    i_np1_pts = pts1';
+    i_n_pts = pts2';
+    j_n_pts = pts3';
+
+    % old code, can ignore
+    %[x1,x2,x3] = ndgrid(i_np1_pts,i_n_pts,j_n_pts);
+    %x1 = x1(:,:)'; x2 = x2(:,:)'; x3 = x3(:,:)';
+    %xi = [x1(:) x2(:) x3(:)];
+
+    % output will store joint pdf estimate for each tuple (identified by m), 
+    % we discretize over space of all possible i_np1 (i.e., i_n+1), i_n, j_n
+    prob3 = zeros(M,npts1,npts2,npts3); 
+    
+    % take 2d data and turn into set of all 3 tuples of interest
+    
+    % where we will store the 3 tuples
+    tuples3 = zeros(M,N-1,3);
+    
     % m = 1
-    for n = 1:N-1 % note: n corresponds to actual n +1
-        j_n = data(M, n); i_n = data(1, n); i_np1 = data(1,n+1);
-        tuples3(1,n,:) = [i_np1 i_n j_n];
-    end
-    % estimate joint pdf
-    to_test = zeros(N-1,3);
-    to_test(:,:) = tuples3(1,:,:);
-    [prob3(1,:),~] = mvksdensity(to_test,to_test,'Bandwidth',r);
+    i_np1 = data(1,2:N); % i_{n+1}
+    i_n = data(1,1:N-1); % i_{n}
+    j_n = data(M,1:N-1); % j_{n}
+
+    tuples3(1,:,:) = [i_np1' i_n' j_n'];
 
     for m = 2:M
-        for n = 1:N-1
-            j_n = data(m-1,n); i_n = data(m,n); i_np1 = data(m,n+1);
-            tuples3(m,n,:) = [i_np1 i_n j_n];
-        end
-        % estimate joint pdf
+        i_np1 = data(m,2:N); % i_{n+1}
+        i_n = data(m,1:N-1); % i_{n}
+        j_n = data(m-1,1:N-1); % j_{n}
+
+        tuples3(m,:,:) = [i_np1' i_n' j_n'];
+    end
+
+    % the 3-tuples have been set up
+
+    % estimate joint pdf at each point in the 25 x 25 x 25 grid
+    for m = 1:M
         to_test = zeros(N-1,3);
         to_test(:,:) = tuples3(m,:,:);
-        [prob3(m,:),~] = mvksdensity(to_test,to_test,'Bandwidth',r);
-    end
-    
-    % output will be prob3
+
+        % estimate joint pdf at each point in the 25 x 25 x 25 grid
+        
+        % more old code, ignore
+        %p = mvksdensity(to_test,xi,'bandwidth',r,'Kernel','box');
+        %szp = size(p);
+        %prob3(m,1:szp(1)) = p;
+        
+        
+        for i = 1:npts1
+            for j = 1:npts2
+                pts = [i_np1_pts(i)*ones(npts3,1) i_n_pts(j)*ones(npts3,1) j_n_pts ];
+                % at each sampled point, counts all data in a cube with
+                % side lengths of 2*r centered at that point
+                prob3(m,i,j,:) = mvksdensity(to_test,pts,'Bandwidth',r,'Kernel','box');
+            end
+        end
+       
+    end 
+
 end
+   
+
+
+
+
+
