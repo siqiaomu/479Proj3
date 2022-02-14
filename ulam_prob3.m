@@ -14,9 +14,9 @@ function [prob3] = ulam_prob3(data,r,d)
     M = sz(1); N = sz(2);
 
     % at how many points in each "dimension" we will sample
-    npts1 = d(1) * 4/r(1);
-    npts2 = d(2) * 4/r(2);
-    npts3 = d(3) * 4/r(3);
+    npts1 = (d(1) * 4/r(1)) + 1;
+    npts2 = (d(2) * 4/r(2)) + 1;
+    npts3 = (d(3) * 4/r(3)) + 1;
 
     % these are the points (we take them to be uniform/equally spaced)
     pts1 = linspace(-2,2,npts1);
@@ -59,12 +59,12 @@ function [prob3] = ulam_prob3(data,r,d)
 
     % the 3-tuples have been set up
 
-    % estimate joint pdf at each point in the 25 x 25 x 25 grid
+    % estimate joint pdf at each point in the 3d grid
     for m = 1:M
         to_test = zeros(N-1,3);
         to_test(:,:) = tuples3(m,:,:);
 
-        % estimate joint pdf at each point in the 25 x 25 x 25 grid
+        % estimate joint pdf at each point in the 3d grid
         
         % more old code, ignore
         %p = mvksdensity(to_test,xi,'bandwidth',r,'Kernel','box');
@@ -82,6 +82,9 @@ function [prob3] = ulam_prob3(data,r,d)
         end
        
     end 
+
+    % Normalize:
+    prob3 = prob3./(M*d(1)*d(2)*d(3));
 
 end
    

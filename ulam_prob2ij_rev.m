@@ -7,8 +7,8 @@ function [prob2ij_rev] = ulam_prob2ij_rev(data,r,d)
     sz = size(data);
     M = sz(1); N = sz(2);
 
-    npts1 = d(1) * 4/r(1);
-    npts2 = d(2) * 4/r(2);
+    npts1 = (d(1) * 4/r(1)) + 1;
+    npts2 = (d(2) * 4/r(2)) + 1;
 
     pts1 = linspace(-2,2,npts1);
     pts2 = linspace(-2,2,npts2);
@@ -16,7 +16,7 @@ function [prob2ij_rev] = ulam_prob2ij_rev(data,r,d)
     i_n_pts = pts1';
     j_n_pts = pts2';
 
-    prob2ij = zeros(M,npts1,npts2);
+    prob2ij_rev = zeros(M,npts1,npts2);
     
     tuples2 = zeros(M,N-1,2);
 
@@ -40,7 +40,9 @@ function [prob2ij_rev] = ulam_prob2ij_rev(data,r,d)
 
         for i = 1:npts1
             pts = [i_n_pts(i)*ones(npts2,1) j_n_pts];
-            prob2ij(m,i,:) = mvksdensity(to_test,pts,'bandwidth',r,'Kernel','box');
+            prob2ij_rev(m,i,:) = mvksdensity(to_test,pts,'bandwidth',r,'Kernel','box');
         end
     end
+
+    prob2ij_rev = prob2ij_rev ./(M * d(1) * d(2)); 
 end

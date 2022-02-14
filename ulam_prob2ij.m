@@ -3,8 +3,8 @@ function [prob2ij] = ulam_prob2ij(data,r,d)
     sz = size(data);
     M = sz(1); N = sz(2);
 
-    npts1 = d(1) * 4/r(1);
-    npts2 = d(2) * 4/r(2);
+    npts1 = (d(1) * 4/r(1)) + 1;
+    npts2 = (d(2) * 4/r(2)) + 1;
 
     pts1 = linspace(-2,2,npts1);
     pts2 = linspace(-2,2,npts2);
@@ -39,5 +39,7 @@ function [prob2ij] = ulam_prob2ij(data,r,d)
             prob2ij(m,i,:) = mvksdensity(to_test,pts,'bandwidth',r,'Kernel','box');
         end
     end
+
+    prob2ij = prob2ij./(M * d(1) * d(2));
 
 end
