@@ -28,8 +28,8 @@ plot(eps, trans_entropy, '-d'); %mean
 xlabel('\epsilon')
 ylabel('transfer entropy T_{I^{m-1}\rightarrow I^m}')
 figure()
-plot(eps, trans_entropy./(eps.^2), '-g')
+plot(eps, trans_entropy./eps, '-g')
 xlabel('\epsilon')
-ylabel('T_{I^{m-1}\rightarrow I^m}/\epsilon^2')
+yl
 
 
