@@ -1,0 +1,8 @@
+clear all; format long; format compact;
+
+%this is generating tent map with different epsilon values
+M=100; N=100;
+eps = linspace(0, 0.1, 2);
+figure();
+x1 = tent_map()
+

@@ -14,22 +14,23 @@ for i=1:length(eps)
     for k=1:10 %take the average of 10 runs
         x_series = tent_map(M, N, eps(i));
         [trans_probs, conditional_probs_2, conditional_probs_1, transition_tuple] = trans_probability(x_series(1e5+1:2e5, :), 1e5, M);
-        temp(i) = tent_map_entropy(trans_probs, conditional_probs_2, conditional_probs_1);
+        temp(k) = tent_map_entropy(trans_probs, conditional_probs_2, conditional_probs_1);
     end
     trans_entropy(i) = mean(temp);
     error(1,i) = mean(temp) - min(temp);
     error(2,i) = max(temp) - mean(temp);
 end
 
-%errorbar(eps, trans_entropy, error(1,:), error(2,:), 'd',...
-%    'MarkerEdgeColor', 'red', 'MarkerFaceColor', 'red')
-%hold on;
-plot(eps, trans_entropy, '-d'); %mean 
+errorbar(eps, trans_entropy, error(1,:), error(2,:), 'd',...
+   'MarkerEdgeColor', 'red', 'MarkerFaceColor', 'red')
+hold on;
+plot(eps, 0.77^2*eps.^2./log(2), '-b'); 
 xlabel('\epsilon')
 ylabel('transfer entropy T_{I^{m-1}\rightarrow I^m}')
+legend('error bars', 'theoretical line')
 figure()
-plot(eps, trans_entropy./(eps.^2), '-g')
-xlabel('\epsilon')
-ylabel('T_{I^{m-1}\rightarrow I^m}/\epsilon^2')
+plot(eps.^2, trans_entropy, '-g')
+xlabel('\epsilon^2')
+ylabel('T_{I^{m-1}\rightarrow I^m}')
 
 

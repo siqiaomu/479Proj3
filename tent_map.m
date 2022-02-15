@@ -20,3 +20,5 @@ function [x_series] = tent_map(M, N, eps)
         end
     end
 end
+
+
