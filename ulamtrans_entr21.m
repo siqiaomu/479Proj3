@@ -1,18 +1,13 @@
-
-
-
-eps = linspace(0,1,41);
-T = zeros(1,51);
-for e=1:51
+eps = 0.6;
 M = 100; N = 10^5 + 10000;
-data = gen_ulam(M,N,eps(e));
+data = gen_ulam(M,N,eps);
 
 r = [0.2 0.2 0.2];
 d = [1 1 1];
-[prob3] = ulam_prob3_rev(data,r,d);
+[prob3_rev] = ulam_prob3_rev(data,r,d);
 r = [0.2 0.2];
 d = [1 1];
-[prob2ij] = ulam_prob2ij_rev(data,r,d);
+[prob2ij_rev] = ulam_prob2ij_rev(data,r,d);
 r = [0.2 0.2];
 d = [1 1];
 [prob2ii] = ulam_prob2ii(data,r,d);
@@ -22,7 +17,7 @@ d = 1;
 
 
 
-% T = 0; 
+T = 0; 
 
 %for m = 1:size(prob3,1)
 
@@ -31,16 +26,23 @@ m = 2;
         for in = 1:size(prob3,3)
             for j = 1:size(prob3,4)
                 
-                if prob3(m,in1,in,j) ~= 0 && prob2ij(m,in,j) ~= 0 && prob2ii(m,in1,in) ~= 0 && prob1i(m,in) ~= 0
-                    p3 = prob3(m,in1,in,j);
-                    p2 = p3/prob2ij(m,in,j);
+                if prob3_rev(m,in1,in,j) ~= 0 && prob2ij_rev(m,in,j) ~= 0 && prob2ii(m,in1,in) ~= 0 && prob1i(m,in) ~= 0
+                    p3 = prob3_rev(m,in1,in,j);
+                    p2 = p3/prob2ij_rev(m,in,j);
                     p1 = prob2ii(m,in1,in)/prob1i(m,in);
-                    T(e) = T(e) + p3*log2(p2/p1);
+                    T = T + p3*log2(p2/p1);
                 end
             end
         end
     end
         
-end
+%end
 
-plot(eps,T)
+
+
+
+
+
+
+
+%end
