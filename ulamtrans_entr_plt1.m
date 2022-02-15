@@ -1,7 +1,7 @@
 
 
 
-eps = linspace(0,1,41);
+eps = 0:.02:1;
 T = zeros(1,51);
 for e=1:51
 M = 100; N = 10^5 + 10000;
@@ -9,10 +9,10 @@ data = gen_ulam(M,N,eps(e));
 
 r = [0.2 0.2 0.2];
 d = [1 1 1];
-[prob3] = ulam_prob3_rev(data,r,d);
+[prob3] = ulam_prob3(data,r,d);
 r = [0.2 0.2];
 d = [1 1];
-[prob2ij] = ulam_prob2ij_rev(data,r,d);
+[prob2ij] = ulam_prob2ij(data,r,d);
 r = [0.2 0.2];
 d = [1 1];
 [prob2ii] = ulam_prob2ii(data,r,d);
@@ -26,7 +26,7 @@ d = 1;
 
 %for m = 1:size(prob3,1)
 
-m = 2;
+m = 1;
     for in1 = 1:size(prob3,2)
         for in = 1:size(prob3,3)
             for j = 1:size(prob3,4)
@@ -43,4 +43,7 @@ m = 2;
         
 end
 
+figure
 plot(eps,T)
+xlabel('epsilon') 
+ylabel('information [bits]') 
